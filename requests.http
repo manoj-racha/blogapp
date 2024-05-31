@@ -1,0 +1,113 @@
+###user api req
+
+###user creation
+POST http://localhost:4000/user-api/user
+Content-Type: application/json
+
+{
+    "userType":"user",
+    "username":"manojracha",
+    "password":"manoj",
+    "email":"manoj@gmail.com"
+}
+
+
+###user login
+POST http://localhost:4000/user-api/login
+Content-Type: application/json
+
+{
+    "userType":"user",
+    "username":"manoj",
+    "password":"manoj"
+}
+
+###redaig article of all users
+get http://localhost:4000/user-api/articles
+
+
+
+### author creation
+POST http://localhost:4000/author-api/author
+Content-Type: application/json
+
+{
+    "userType":"author",
+    "username":"Anvi",
+    "password":"manoj",
+    "email":"manoj@gmail.com"
+}
+
+###author login
+POST http://localhost:4000/author-api/login
+Content-Type: application/json
+
+{
+    "userType":"author",
+    "username":"Anvi",
+    "password":"manoj"
+}
+
+### add new articles by author
+POST http://localhost:4000/author-api/article
+Content-Type: application/json
+
+{
+   "articleId":"{{$timestamp}}",
+   "title":"Fundamentals of JS",
+   "category":"programming",
+   "content":"JavaScript (/ˈdʒɑːvəskrɪpt/), often abbreviated as JS, is a programming language and core technology of the Web, alongside HTML and CSS. 99% of websites use JavaScript on the client side for webpage behavior.[10]Web browsers have a dedicated JavaScript engine that executes the client code. These engines are also utilized in some servers and a variety of apps. The most popular runtime system for non-browser usage is Node.js.",
+   "dateOfCreation":"{{$datetime iso8601}}",
+   "username":"Anvi",
+   "comments":[],
+   "status":true
+}
+
+### update the articles
+PUT http://localhost:4000/author-api/article
+Content-Type: application/json
+
+{
+   "articleId":"1716959317",
+   "title":"Fundamentals of JS",
+   "category":"programming",
+   "content":"JavaScript (/ˈdʒɑːvəskrɪpt/), often abbreviated as JS, is a programming language and core technology of the Web, alongside HTML and CSS. 99% of websites use JavaScript on the client side for webpage behavior.",
+   "dateOfCreation":"{{$datetime iso8601}}",
+   "username":"Anvi",
+   "comments":[],
+   "status":true
+}
+
+### delete the article by  articleId
+PUT http://localhost:4000/author-api/article/1716959317
+Content-Type: application/json
+
+{
+   "articleId":"1716959317",
+   "title":"Fundamentals of JS",
+   "category":"programming",
+   "content":"JavaScript (/ˈdʒɑːvəskrɪpt/), often abbreviated as JS, is a programming language and core technology of the Web, alongside HTML and CSS. 99% of websites use JavaScript on the client side for webpage behavior.",
+   "dateOfCreation":"{{$datetime iso8601}}",
+   "username":"Anvi",
+   "comments":[],
+   "status":true
+}
+
+### get aricle of same author by user name
+get http://localhost:4000/author-api/article/Anvi
+
+### add comment to the article
+put http://localhost:4000/user-api/comment/1716959317
+Content-Type: application/json
+
+{
+    "username":"An",
+    "Comment":"Goooood"
+}
+
+
+###
+GET http://localhost:4000/admin-api/test-admin
+
+###
+GET http://localhost:4000/author-api/test-author

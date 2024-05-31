@@ -1,0 +1,11 @@
+.navbar-nav .nav-link hr{
+    border: none;
+    width: 80%;
+    height:  3px;
+    border-radius: 10px;
+    background: #FF4141;
+}
+
+.clicked {
+    box-shadow: 0 0 0 0.1rem rgba(0, 0, 0, 0.25);
+}
