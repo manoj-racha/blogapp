@@ -24,6 +24,7 @@ authorApp.post('/author',expressAsyncHandler(async(req,res) =>{
 
     // check for duplicate author
     const dbres = await authorscollection.findOne({username:newUser.username})
+    // console.log(dbres)
     // if user found in db
     if(dbres !== null)
     {
@@ -34,11 +35,12 @@ authorApp.post('/author',expressAsyncHandler(async(req,res) =>{
         // replace the plain password with hashed passord
         newUser.password = hashedPassword;
         // create new author
-        await usercollection.insertOne(newUser);
+        await authorscollection.insertOne(newUser);
         // send res
         res.send({message:"author is created"})
     }
 }))
+// http://localhost:4000/author-api/new-article
 
 // get the articlescollection
 
@@ -46,7 +48,7 @@ authorApp.post('/author',expressAsyncHandler(async(req,res) =>{
 authorApp.post('/login',expressAsyncHandler(async(req,res)=>{
     // get the user cred obj from client
     const userCred = req.body;
-
+    // console.log(userCred)
     // check for user name
     const dbres = await authorscollection.findOne({username:userCred.username})
     if(dbres === null)
@@ -63,7 +65,7 @@ authorApp.post('/login',expressAsyncHandler(async(req,res)=>{
         else
         {
             // create jwt token
-            const signedToken = jwt.sign({username:dbres.username},process.env.SECRET_KEY,{expiresIn:20})
+            const signedToken = jwt.sign({username:dbres.username},process.env.SECRET_KEY,{expiresIn:'1d'})
             // send res
             res.send({message:"login success",token:signedToken,user:dbres})
 
@@ -74,18 +76,25 @@ authorApp.post('/login',expressAsyncHandler(async(req,res)=>{
 
 
 // adding a new article
-authorApp.post('/article',verifyToken,expressAsyncHandler(async(req,res)=>{
-    //get the  new article from client
-    const newArticle = req.body;
-
-    // post it to db
-    await articlescollection.insertOne(newArticle);
-
-    // send res
-    res.send({message:"new article created"})
-
-    
-}))
+authorApp.post('/new-article', async (req, res) => {
+    //get new article from author
+    // let authorsCollection =
+    const newAtricle = req.body;
+    //console.log(newAtricle)
+    //check author identity
+    let dbAuthor = await authorscollection.findOne({
+      username: newAtricle.username,
+    });
+    //if author not found
+    // console.log("checking completed",dbAuthor)
+    if (dbAuthor === null) {
+      res.send({ message: "Invalid Author name" });
+    } else {
+      let result = await articlescollection.insertOne(newAtricle);
+    //   console.log(result)
+      res.status(201).send({ message: "New article added" });
+    }
+  });
 
 // updating the article
 authorApp.put('/article',verifyToken,expressAsyncHandler(async(req,res) =>{
@@ -99,7 +108,7 @@ authorApp.put('/article',verifyToken,expressAsyncHandler(async(req,res) =>{
 }))
 
 // delete the article by article id
-authorApp.put('/article/:articleId',verifyToken,expressAsyncHandler(async(req,res) =>{
+authorApp.put('/article/:articleId',expressAsyncHandler(async(req,res) =>{
     // get the article id from url
     const articleIdfromUrl = req.params.articleId;
     // get the article
@@ -111,7 +120,7 @@ authorApp.put('/article/:articleId',verifyToken,expressAsyncHandler(async(req,re
 }))
 
 // get the artcle of same author by author name
-authorApp.get('/article/:username',verifyToken,expressAsyncHandler(async(req,res) =>{
+authorApp.get('/articles/:username',verifyToken,expressAsyncHandler(async(req,res) =>{
     // get the username from usrl
     const usernameFromUrl = req.params.username;
     // get the articles whose status is true

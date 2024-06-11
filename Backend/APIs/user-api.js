@@ -65,7 +65,7 @@ userApp.post('/login',expressAsyncHandler(async(req,res)=>{
         else
         {
             // create jwt token
-            const signedToken = jwt.sign({username:dbres.username},process.env.SECRET_KEY,{expiresIn:20})
+            const signedToken = jwt.sign({username:dbres.username},process.env.SECRET_KEY,{expiresIn:'1d'})
             // send res
             res.send({message:"login success",token:signedToken,user:dbres})
 
@@ -86,14 +86,14 @@ userApp.get('/articles',verifyToken,expressAsyncHandler(async(req,res) =>{
 
 
 // post a comment on article
-userApp.put('/comment/:articleIdFromUrl',verifyToken,expressAsyncHandler(async(req,res)=>{
+userApp.post('/comment/:articleIdFromUrl',verifyToken,expressAsyncHandler(async(req,res)=>{
     // get the articleIdFromUrl
-    const articleIdFromUrl = req.params.articleIdFromUrl;
+    const articleIdFromUrl = Number(req.params.articleIdFromUrl);
     // get the comment obj from cleint
     const comment = req.body;
     // inser the commentobj in the comment array of the article by id
     const result = await articlescollection.updateOne({articleId:articleIdFromUrl},{$addToSet:{comments:comment}})
-    console.log(comment)
+    // console.log(comment)
     // send res
     res.send({message:"comment is posted"})
 }))

@@ -11,6 +11,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, '../client/build')));
 
 // Connect to the database
+
 (async () => {
   try {
     const client = await MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -30,6 +31,7 @@ app.use(express.static(path.join(__dirname, '../client/build')));
   } catch (err) {
     console.error("Error in DB connection", err);
   }
+  
 })();
 
 // Import the API routes

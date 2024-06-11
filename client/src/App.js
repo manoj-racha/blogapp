@@ -1,30 +1,73 @@
-// src/App.js
-import Navbar from './Components/Navbar/Navbar';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import './App.css';
+import React from 'react';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import RootLayout from './RootLayout';
+// import RootLayout from './RootLayout';
 import Home from './Components/Home/Home';
 import Signin from './Components/Singin/Signin';
 import Signup from './Components/Signup/Signup';
 import Footer from './Components/Footer/Footer';
 import UserProfile from './Components/UserProfile/userProfile';
 import AuthorProfile from './Components/authorProfile/authorProfile';
+import AtriclesByAuthors from './Components/ArticlesByAuthors/AtriclesByAuthors';
+import AddArticle from './Components/Add-Article/addArticle';
+import Articles from './Components/articles/Articles';
+import Article from './Components/article/article';
 
-function App() {
-  return (
-    <div className="App">
-      <BrowserRouter>
-      <Navbar/>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/Signin" element={<Signin />} />
-          <Route path='/Signup' element={<Signup />} />
-          <Route path="/user-profile" element={<UserProfile />} />
-          <Route path='/author-profile' element={<AuthorProfile />} />
-        </Routes>
-        <Footer />
-      </BrowserRouter>
-    </div>
-  );
-}
+const router = createBrowserRouter([
+  {
+    path: '',
+    element: <RootLayout />,
+    children: [
+      {
+        path: '',
+        element: <Home />,
+      },
+      {
+        path: 'signup',
+        element: <Signup />,
+      },
+      {
+        path: 'signin',
+        element: <Signin />,
+      },
+      {
+        path: 'user-profile',
+        element: <UserProfile />,
+        children:[
+          {
+            path:'articles',
+            element: <Articles/>
+          },
+          {
+            path : 'article/:articleId',
+            element : <Article/>
+        },
+        ]
+      },
+      {
+        path: 'author-profile',
+        element: <AuthorProfile />,
+        children: [
+          {
+            path: 'new-article',
+            element: <AddArticle />,
+          },
+          {
+            path: 'articles-by-author/:author',
+            element: <AtriclesByAuthors />,
+          },
+          {
+              path : 'article/:articleId',
+              element : <Article/>
+          },
+        ],
+      },
+    ],
+  },
+]);
+
+const App = () => {
+  return <RouterProvider router={router} />;
+};
 
 export default App;

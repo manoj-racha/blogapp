@@ -13,6 +13,7 @@ function verifyToken(req,res,next){
     const token = bearerToken.split(' ')[1];
     try{
         jwt.verify(token,process.env.SECRET_KEY)
+        next();
     }
     catch(err)
     {

@@ -22,8 +22,8 @@ const Navbar = () => {
       <div className="navbar-box navbar-expand-sm">
         <nav className="navbar navbar-expand-md navbar-light shadow-sm p-1 mb-1 bg-white rounded">
           <div className="container-fluid px-5">
-            <div className="collapse navbar-collapse justify-content-end align-items-end" id="main-nav">
-              <ul className="navbar-nav mx-auto align-items-center">
+            <div className="collapse navbar-collapse" id="main-nav">
+              <ul className="navbar-nav ms-auto align-items-center">
                 {loginUserStatus === false ? (
                   <>
                     <li className="nav-item">
@@ -43,9 +43,9 @@ const Navbar = () => {
                     </li>
                   </>
                 ) : (
-                  <li className="nav-item">
+                  <li className="nav-item d-flex">
+                    <span className='lead fs-5 me-3 fw-1'>{currentUser.username}</span>
                     <Link to="/" className="nav-link" onClick={signOut}>
-                      <span className='lead fs-5 me-3 fw-1'>{currentUser.username}</span>
                       Signout 
                     </Link>
                   </li>
