@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom';
+import { useLocation,useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import {axiousWithToken} from '../../axiousWithToken'
+import { CiEdit } from "react-icons/ci";
+import { MdDelete } from "react-icons/md";
+import { MdOutlineRestore } from "react-icons/md";
 
 const Article = () => {
   const { currentUser } = useSelector((state) => state.userAuthorLogin);
   let { state } = useLocation();
   // console.log(state)
   const { register, handleSubmit, reset } = useForm();
+  const[deleteStatus,setDeleteStats] = useState(state.status)
   let [comment,setComment] = useState('')
+  let navigate = useNavigate();
    let [artcleEditStatus,setArticleEditStatus] = useState(false)
   const onSubmit = async(data) => {
     data.username = currentUser.username
@@ -25,8 +30,39 @@ const Article = () => {
   const enableEditStatus = () =>{
     setArticleEditStatus(true)
   }
+
+// save the modified changes
+const saveModifiedChanges = async(editedArticle) =>{
+  // console.log("modified article",modifiedArticle)
+  let modifiedArticle = {...state,...editedArticle}
+  delete modifiedArticle._id;
+  modifiedArticle.dateOfModification = new Date();
+  let res =  await axiousWithToken.put('http://localhost:4000/author-api/article',modifiedArticle);
+  if(res.data.message === 'Article is modified'){
+    setArticleEditStatus(false)
+    navigate(`/author-profile/article/${modifiedArticle.articleId}`,{state:res.data.article})
+  }
+
+
+}
+const deleteArticle = async () => {
+  let res = await axiousWithToken.put(`http://localhost:4000/author-api/article/${state.articleId}`, state);
+  if (res.data.message === 'article is deleted') {
+    // navigate(`/author-profile/articles-by-author/${state.username}`);
+    setDeleteStats(true)
+  } 
+};
+
+const restoreArticle = async() =>{
+  let res = await axiousWithToken.put(`http://localhost:4000/author-api/article/${state.articleId}`,state);
+  if (res.data.message === 'article is restored') {
+    // navigate(`/author-profile/articles-by-author/${state.username}`);
+    setDeleteStats(false)
+}
+}
+
   return (
-    <div>
+    <div>   
       {
         artcleEditStatus === false ? <>
             <div>
@@ -45,8 +81,10 @@ const Article = () => {
         <div>
           {currentUser.userType === "author" && (
             <>
-              <span className="me-2" onClick={enableEditStatus}>Edit</span>
-              <span>Delete</span>
+             <span className="me-2 btn btn-info" onClick={enableEditStatus}><CiEdit /></span>
+              {deleteStatus === false ?(<span className="me-2 btn btn-info" onClick={restoreArticle}><MdOutlineRestore /></span>) :
+              (<span  className="me-2 btn btn-danger" onClick={deleteArticle}><MdDelete /></span>) 
+            }
             </>
           )}
         </div>
@@ -59,7 +97,7 @@ const Article = () => {
         {/* user comments */}
         <div className="comments my-4">
           {state.comments.length === 0 ? (
-            <p className='display-3' >No comments</p>
+            <p className='display-5 ' >No comments</p>
           ) : (
             state.comments.map((commentObj,ind) =>{
               return(
@@ -92,9 +130,49 @@ const Article = () => {
       </div>
     </div>
         </> : <>
-        <form >
-          <input type="text" />
-        </form>
+        <form onSubmit={handleSubmit(saveModifiedChanges)}>
+                <div className="mb-4">
+                  <label htmlFor="title" className="form-label">
+                    Title
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="title"
+                    {...register('title', { required: true } )}
+                    defaultValue={state.title}
+                  />
+                  {/* {errors.title && <span className="text-danger">Title is required</span>} */}
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="category" className="form-label">
+                    Select a category
+                  </label>
+                  <select {...register('category')} id="category" className="form-select" defaultValue={state.category}>
+                    <option value="programming">Programming</option>
+                    <option value="AI&ML">AI & ML</option>
+                    <option value="database">Database</option>
+                  </select>
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="content" className="form-label" > 
+                    Content
+                  </label>
+                  <textarea
+                    {...register('content', { required: true })}
+                    className="form-control"
+                    id="content"
+                    rows="10"
+                    defaultValue={state.content}
+                  ></textarea>
+                  {/* {errors.content && <span className="text-danger">Content is required</span>} */}
+                </div>
+                <div className="text-end">
+                  <button type="submit" className="btn btn-primary">
+                    Post
+                  </button>
+                </div>
+              </form>
         </>
       }
     </div>

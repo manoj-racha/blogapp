@@ -1,22 +1,27 @@
 import React from 'react';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import RootLayout from './RootLayout';
 // import RootLayout from './RootLayout';
 import Home from './Components/Home/Home';
 import Signin from './Components/Singin/Signin';
 import Signup from './Components/Signup/Signup';
 import Footer from './Components/Footer/Footer';
+import {lazy,Suspense} from 'react'
 import UserProfile from './Components/UserProfile/userProfile';
 import AuthorProfile from './Components/authorProfile/authorProfile';
 import AtriclesByAuthors from './Components/ArticlesByAuthors/AtriclesByAuthors';
 import AddArticle from './Components/Add-Article/addArticle';
-import Articles from './Components/articles/Articles';
+// import Articles from './Components/articles/Articles';
+
 import Article from './Components/article/article';
+import Error from './Components/Error';
+const Articles = lazy(()=>import('./Components/articles/Articles'))
 
 const router = createBrowserRouter([
   {
     path: '',
     element: <RootLayout />,
+    errorElement: <Error/>,
     children: [
       {
         path: '',
@@ -36,7 +41,7 @@ const router = createBrowserRouter([
         children:[
           {
             path:'articles',
-            element: <Articles/>
+            element:<Suspense fallback="loading..."><Articles/></Suspense> 
           },
           {
             path : 'article/:articleId',
@@ -60,6 +65,10 @@ const router = createBrowserRouter([
               path : 'article/:articleId',
               element : <Article/>
           },
+          {
+            path :'',
+            element : <Navigate to ='articles-by-author/:author'/>
+          }
         ],
       },
     ],

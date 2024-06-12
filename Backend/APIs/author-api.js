@@ -102,21 +102,32 @@ authorApp.put('/article',verifyToken,expressAsyncHandler(async(req,res) =>{
     const modifiedArticle = req.body;
     // update the aticle
     let result = await articlescollection.updateOne({articleId:modifiedArticle.articleId},{$set:{...modifiedArticle}})
-
+    const newArticle = await articlescollection.findOne({articleId:modifiedArticle.articleId});
+    // console.log(newArticle)
     // send res
-    res.send({message:"Article is modified"})
+    res.send({message:"Article is modified",article:newArticle},)
 }))
 
 // delete the article by article id
 authorApp.put('/article/:articleId',expressAsyncHandler(async(req,res) =>{
     // get the article id from url
-    const articleIdfromUrl = req.params.articleId;
+    const articleIdfromUrl = Number(req.params.articleId);
     // get the article
     const articleToDelete = req.body;
     // update the status to false
-    await articlescollection.updateOne({articleId:articleIdfromUrl},{$set:{...articleToDelete,status:false}}) 
-    // send res
+    if(articleToDelete.status === true){
+    let resp =await articlescollection.updateOne({ articleId: articleIdfromUrl }, { $set: { status: false } });  
     res.send({message:"article is deleted"})
+    // console.log(resp)
+    }
+    if(articleToDelete.status === false)
+        {
+            let resp =await articlescollection.updateOne({ articleId: articleIdfromUrl }, { $set: { status: true } });  
+            res.send({message:"article is restored"})
+            // console.log(resp)
+        }
+    // console.log(resp)  // send res
+    
 }))
 
 // get the artcle of same author by author name
@@ -124,7 +135,7 @@ authorApp.get('/articles/:username',verifyToken,expressAsyncHandler(async(req,re
     // get the username from usrl
     const usernameFromUrl = req.params.username;
     // get the articles whose status is true
-    const articlesList = await articlescollection.find({"$and":[{status:true},{username:usernameFromUrl}]}).toArray();
+    const articlesList = await articlescollection.find({username:usernameFromUrl}).toArray();
     // send res
     res.send({message:"articles List",payload:articlesList})
 }))
